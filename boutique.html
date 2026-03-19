@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maison Élore — Objets Singuliers</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #f9f6f1;
+    --warm-white: #fdfcfa;
+    --ink: #1a1814;
+    --muted: #7a7268;
+    --border: #e8e3db;
+    --sage: #b8c4b0;
+    --blush: #e8d5cc;
+    --stone: #c9c2b8;
+    --accent: #9c8c7a;
+    --shadow: rgba(26,24,20,0.07);
+    --shadow-md: rgba(26,24,20,0.13);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw;
+    height: 72px;
+    background: rgba(249,246,241,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow .3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 24px var(--shadow); }
+
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.55rem;
+    font-weight: 400;
+    letter-spacing: .06em;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .nav-brand span { font-style: italic; color: var(--accent); }
+
+  .nav-right { display: flex; align-items: center; gap: 2rem; }
+
+  .nav-link {
+    font-size: .82rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color .2s;
+  }
+  .nav-link:hover { color: var(--ink); }
+
+  .cart-btn {
+    position: relative; cursor: pointer;
+    width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: transparent;
+    transition: all .25s;
+  }
+  .cart-btn:hover { background: var(--ink); border-color: var(--ink); }
+  .cart-btn:hover svg { stroke: var(--cream); }
+  .cart-btn svg { stroke: var(--ink); transition: stroke .25s; }
+
+  .cart-badge {
+    position: absolute; top: -4px; right: -4px;
+    width: 18px; height: 18px;
+    background: var(--ink); color: var(--cream);
+    border-radius: 50%; font-size: .65rem;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500; opacity: 0; transform: scale(0);
+    transition: all .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .cart-badge.visible { opacity: 1; transform: scale(1); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 0 5vw;
+    padding-top: 72px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 40%, rgba(184,196,176,.22) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 70%, rgba(232,213,204,.18) 0%, transparent 55%);
+  }
+
+  .hero-content { max-width: 640px; position: relative; }
+
+  .hero-eyebrow {
+    font-size: .78rem; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.4rem;
+    animation: fadeUp .8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 5.2rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 1.6rem;
+    animation: fadeUp .8s .15s ease both;
+  }
+  .hero-title em { font-style: italic; color: var(--accent); }
+
+  .hero-desc {
+    font-size: 1rem; color: var(--muted);
+    max-width: 440px; line-height: 1.75;
+    margin-bottom: 2.8rem;
+    animation: fadeUp .8s .3s ease both;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: .75rem;
+    padding: .85rem 2.2rem;
+    background: var(--ink); color: var(--cream);
+    border: none; border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .85rem; letter-spacing: .1em;
+    text-transform: uppercase; cursor: pointer;
+    transition: all .3s;
+    animation: fadeUp .8s .45s ease both;
+    text-decoration: none;
+  }
+  .hero-cta:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-md); }
+  .hero-cta svg { transition: transform .3s; }
+  .hero-cta:hover svg { transform: translateX(4px); }
+
+  .hero-visual {
+    position: absolute; right: 0; top: 72px; bottom: 0;
+    width: 45vw; max-width: 600px;
+    pointer-events: none; overflow: hidden;
+    animation: fadeIn 1.2s .2s ease both;
+  }
+  .hero-visual img { width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: .55; }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    text-align: center;
+    padding: 5rem 5vw 3.5rem;
+  }
+  .section-eyebrow {
+    font-size: .75rem; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 300; line-height: 1.15;
+  }
+  .section-title em { font-style: italic; color: var(--accent); }
+
+  /* ── PRODUCTS GRID ── */
+  #collection { padding: 0 5vw 7rem; }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all .35s cubic-bezier(.25,.46,.45,.94);
+    display: flex; flex-direction: column;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px var(--shadow-md);
+    border-color: transparent;
+  }
+
+  .card-img {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+  }
+  .card-img img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform .6s cubic-bezier(.25,.46,.45,.94);
+  }
+  .card:hover .card-img img { transform: scale(1.06); }
+
+  .card-tag {
+    position: absolute; top: 1rem; left: 1rem;
+    font-size: .7rem; letter-spacing: .12em;
+    text-transform: uppercase;
+    background: var(--cream); color: var(--muted);
+    padding: .3rem .7rem;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+  }
+
+  .card-body {
+    padding: 1.6rem 1.8rem 2rem;
+    flex: 1; display: flex; flex-direction: column;
+  }
+
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; font-weight: 400;
+    margin-bottom: .5rem;
+  }
+  .card-desc {
+    font-size: .88rem; color: var(--muted);
+    line-height: 1.65; margin-bottom: 1.4rem;
+    flex: 1;
+  }
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.45rem; font-weight: 300;
+    letter-spacing: .02em;
+  }
+  .card-actions { display: flex; gap: .6rem; }
+
+  .btn-secondary {
+    padding: .6rem 1.1rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .78rem; letter-spacing: .08em;
+    text-transform: uppercase; cursor: pointer;
+    color: var(--muted);
+    transition: all .25s;
+  }
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+
+  .btn-primary {
+    padding: .6rem 1.1rem;
+    background: var(--ink); color: var(--cream);
+    border: 1px solid var(--ink);
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .78rem; letter-spacing: .08em;
+    text-transform: uppercase; cursor: pointer;
+    transition: all .25s;
+  }
+  .btn-primary:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-1px); }
+  .btn-primary.added {
+    background: var(--sage); border-color: var(--sage);
+    animation: pulse .4s ease;
+  }
+
+  /* ── DETAIL OVERLAY ── */
+  .overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(26,24,20,.5);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s;
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+
+  .detail-panel {
+    background: var(--warm-white);
+    border-radius: 8px;
+    max-width: 900px; width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    transform: translateY(24px);
+    transition: transform .4s cubic-bezier(.25,.46,.45,.94);
+    box-shadow: 0 40px 100px rgba(0,0,0,.2);
+  }
+  .overlay.open .detail-panel { transform: translateY(0); }
+
+  .detail-img { aspect-ratio: 1; overflow: hidden; border-radius: 8px 0 0 8px; }
+  .detail-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  .detail-content {
+    padding: 3rem 2.5rem;
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .detail-tag {
+    font-size: .72rem; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .detail-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem; font-weight: 300;
+    line-height: 1.15; margin-bottom: .5rem;
+  }
+  .detail-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 300;
+    color: var(--accent); margin-bottom: 1.4rem;
+  }
+  .detail-desc {
+    font-size: .9rem; color: var(--muted);
+    line-height: 1.75; margin-bottom: 1.8rem;
+  }
+
+  .detail-specs {
+    border-top: 1px solid var(--border);
+    padding-top: 1.4rem; margin-bottom: 2rem;
+  }
+  .detail-specs h4 {
+    font-size: .72rem; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .spec-row {
+    display: flex; justify-content: space-between;
+    padding: .45rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .87rem;
+  }
+  .spec-row span:first-child { color: var(--muted); }
+  .spec-row span:last-child { font-weight: 400; }
+
+  .detail-add {
+    margin-top: auto;
+    padding: 1rem 2rem;
+    background: var(--ink); color: var(--cream);
+    border: none; border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem; letter-spacing: .1em;
+    text-transform: uppercase; cursor: pointer;
+    transition: all .3s; width: 100%;
+  }
+  .detail-add:hover { background: var(--accent); transform: translateY(-2px); }
+  .detail-add.added { background: var(--sage); }
+
+  .close-btn {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--cream); border: 1px solid var(--border);
+    border-radius: 50%; cursor: pointer;
+    transition: all .2s; z-index: 1;
+  }
+  .close-btn:hover { background: var(--ink); }
+  .close-btn:hover svg { stroke: var(--cream); }
+  .close-btn svg { stroke: var(--ink); transition: stroke .2s; }
+
+  /* ── CART PANEL ── */
+  .cart-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 300;
+    width: min(420px, 100vw);
+    background: var(--warm-white);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .4s cubic-bezier(.25,.46,.45,.94);
+    box-shadow: -20px 0 60px var(--shadow);
+  }
+  .cart-panel.open { transform: translateX(0); }
+
+  .cart-overlay-bg {
+    position: fixed; inset: 0; z-index: 290;
+    background: rgba(26,24,20,.35);
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s;
+  }
+  .cart-overlay-bg.open { opacity: 1; pointer-events: all; }
+
+  .cart-header {
+    padding: 1.8rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cart-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; font-weight: 400;
+  }
+
+  .cart-items { flex: 1; overflow-y: auto; padding: 1.5rem 2rem; }
+
+  .cart-empty {
+    text-align: center; padding: 4rem 0;
+    color: var(--muted); font-size: .9rem;
+  }
+  .cart-empty svg { stroke: var(--stone); margin-bottom: 1rem; }
+
+  .cart-item {
+    display: grid; grid-template-columns: 72px 1fr auto;
+    gap: 1rem; padding: 1.2rem 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp .3s ease;
+  }
+  .cart-item-img {
+    width: 72px; height: 72px;
+    border-radius: 4px; overflow: hidden;
+  }
+  .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  .cart-item-info h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; font-weight: 400; margin-bottom: .2rem;
+  }
+  .cart-item-info p {
+    font-size: .82rem; color: var(--muted); margin-bottom: .6rem;
+  }
+
+  .qty-control {
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .qty-btn {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 3px; cursor: pointer;
+    font-size: 1rem; color: var(--ink);
+    transition: all .2s;
+  }
+  .qty-btn:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .qty-num { font-size: .9rem; min-width: 20px; text-align: center; }
+
+  .remove-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--stone); transition: color .2s;
+    align-self: start; padding: .2rem;
+  }
+  .remove-btn:hover { color: #c0392b; }
+
+  .cart-footer {
+    padding: 1.8rem 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .cart-total-row {
+    display: flex; justify-content: space-between;
+    align-items: baseline; margin-bottom: 1.6rem;
+  }
+  .cart-total-row span:first-child {
+    font-size: .82rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .cart-total-row .total-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 300;
+  }
+
+  .cart-checkout {
+    width: 100%; padding: 1rem;
+    background: var(--ink); color: var(--cream);
+    border: none; border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem; letter-spacing: .12em;
+    text-transform: uppercase; cursor: pointer;
+    transition: all .3s; margin-bottom: .8rem;
+  }
+  .cart-checkout:hover { background: var(--accent); }
+
+  .cart-note {
+    text-align: center; font-size: .75rem;
+    color: var(--stone); letter-spacing: .06em;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 48px; height: 1px;
+    background: var(--stone); margin: 0 auto 1.5rem;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink); color: var(--cream);
+    padding: 4rem 5vw 2.5rem;
+    margin-top: 2rem;
+  }
+  .footer-top {
+    display: flex; justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    gap: 2rem; flex-wrap: wrap;
+  }
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 300;
+    letter-spacing: .06em;
+  }
+  .footer-brand span { font-style: italic; color: var(--stone); }
+  .footer-tagline { font-size: .82rem; color: var(--stone); margin-top: .4rem; }
+
+  .footer-links { display: flex; gap: 3rem; flex-wrap: wrap; }
+  .footer-col h4 {
+    font-size: .72rem; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--stone);
+    margin-bottom: 1rem;
+  }
+  .footer-col a {
+    display: block; font-size: .85rem;
+    color: rgba(253,252,250,.65);
+    text-decoration: none; margin-bottom: .5rem;
+    transition: color .2s;
+  }
+  .footer-col a:hover { color: var(--cream); }
+
+  .footer-bottom {
+    padding-top: 1.8rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .78rem; color: var(--stone);
+    flex-wrap: wrap; gap: 1rem;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink); color: var(--cream);
+    padding: .8rem 1.6rem;
+    border-radius: 3px; font-size: .85rem;
+    letter-spacing: .05em;
+    transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+    z-index: 500; white-space: nowrap;
+    box-shadow: 0 8px 24px var(--shadow-md);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(.95); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 1.2rem; }
+    .nav-link { display: none; }
+    .hero-visual { display: none; }
+    #hero { min-height: 85vh; padding: 0 1.4rem; padding-top: 72px; }
+    .hero-title { font-size: 2.6rem; }
+    .detail-panel { grid-template-columns: 1fr; max-height: 95vh; }
+    .detail-img { aspect-ratio: 16/9; border-radius: 8px 8px 0 0; }
+    .detail-content { padding: 2rem 1.6rem; }
+    .products-grid { grid-template-columns: 1fr; }
+    .footer-top { flex-direction: column; }
+    .footer-links { gap: 2rem; }
+  }
+  @media (max-width: 480px) {
+    .hero-title { font-size: 2.1rem; }
+    .section-header { padding: 3.5rem 1.4rem 2.5rem; }
+    #collection { padding: 0 1.4rem 5rem; }
+    .products-grid { gap: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-brand" onclick="scrollToTop()">Maison <span>Élore</span></a>
+  <div class="nav-right">
+    <a class="nav-link" onclick="scrollToCollection()">Collection</a>
+    <a class="nav-link" href="#">À propos</a>
+    <button class="cart-btn" onclick="toggleCart()" aria-label="Panier">
+      <svg width="20" height="20" fill="none" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="3" y1="6" x2="21" y2="6" stroke-linecap="round"/>
+        <path d="M16 10a4 4 0 01-8 0" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Collection Printemps 2025</p>
+    <h1 class="hero-title">Des objets<br>qui <em>racontent</em><br>une histoire</h1>
+    <p class="hero-desc">Maison Élore sélectionne des pièces rares et intemporelles, façonnées avec soin pour habiter vos espaces de vie avec élégance.</p>
+    <a class="hero-cta" onclick="scrollToCollection()">
+      Découvrir la collection
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </a>
+  </div>
+  <div class="hero-visual">
+    <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&q=80" alt="intérieur élégant">
+  </div>
+</section>
+
+<!-- COLLECTION -->
+<section id="collection">
+  <div class="section-header">
+    <p class="section-eyebrow">Nos pièces</p>
+    <h2 class="section-title">La <em>Collection</em></h2>
+    <div class="divider" style="margin-top:1.4rem;"></div>
+  </div>
+
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">Maison <span>Élore</span></div>
+      <p class="footer-tagline">Objets singuliers pour espaces choisis.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Boutique</h4>
+        <a href="#">Collection</a>
+        <a href="#">Nouveautés</a>
+        <a href="#">Éditions limitées</a>
+      </div>
+      <div class="footer-col">
+        <h4>Maison</h4>
+        <a href="#">Notre histoire</a>
+        <a href="#">Savoir-faire</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Maison Élore — Simulation de design</span>
+    <span>Aucun achat réel possible</span>
+  </div>
+</footer>
+
+<!-- DETAIL OVERLAY -->
+<div class="overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="detail-panel" id="detailPanel">
+    <button class="close-btn" onclick="closeDetailBtn()">
+      <svg width="14" height="14" stroke-width="1.8" fill="none" viewBox="0 0 24 24">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <div class="detail-img" id="detailImg"></div>
+    <div class="detail-content" id="detailContent"></div>
+  </div>
+</div>
+
+<!-- CART PANEL -->
+<div class="cart-overlay-bg" id="cartBg" onclick="toggleCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h2>Panier</h2>
+    <button class="close-btn" onclick="toggleCart()">
+      <svg width="14" height="14" stroke-width="1.8" fill="none" viewBox="0 0 24 24">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span class="total-price" id="cartTotal">0,00 €</span>
+    </div>
+    <button class="cart-checkout">Passer la commande</button>
+    <p class="cart-note">— Simulation uniquement, aucun paiement —</p>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── PRODUCTS DATA ──
+const products = [
+  {
+    id: 1,
+    tag: "Luminaire",
+    name: "Nessino — Artemide",
+    price: 189,
+    shortDesc: "Icône du design italien, la Nessino d'Artemide déploie sa lumière douce à travers un diffuseur en polycarbonate blanc opaque d'une pureté sculpturale.",
+    longDesc: "Conçue par Giancarlo Mattioli en 1969, la Nessino est une miniature de la célèbre Nesso. Sa forme organique en champignon, moulée en polycarbonate blanc opaque, diffuse une lumière chaude et enveloppante vers le bas. Pièce intemporelle du design industriel italien, elle trouve sa place aussi bien sur un bureau que sur une table de nuit.",
+    img: "https://media.madeindesign.com/cdn-cgi/image/fit=pad,background=white,format=auto,width=448,height=448,quality=80/nuxeo/products/a/d/lampe-de-table-nessino-blanc-opaque-artemide_madeindesign_1752072547_original.jpg",
+    specs: [
+      ["Marque", "Artemide"],
+      ["Designer", "Giancarlo Mattioli"],
+      ["Matière", "Polycarbonate blanc opaque"],
+      ["Hauteur", "18 cm"],
+      ["Coloris", "Blanc opaque"],
+    ]
+  },
+  {
+    id: 2,
+    tag: "Luminaire",
+    name: "Pipistrello — Martinelli Luce",
+    price: 345,
+    shortDesc: "La Pipistrello de Martinelli Luce, signée Gae Aulenti, est une lampe culte aux ailes déployées, ici en finition noir brillant d'une élégance dramatique.",
+    longDesc: "Dessinée par Gae Aulenti en 1965, la Pipistrello — chauve-souris en italien — est l'une des lampes les plus reconnaissables du design du XXe siècle. Ses ailes en méthacrylate diffusent une lumière chaude et tamisée. La tige télescopique permet de régler la hauteur selon l'usage. Un classique absolu, ici revisité dans une finition noir brillant saisissante.",
+    img: "https://media.madeindesign.com/cdn-cgi/image/fit=pad,background=white,format=auto,width=448,height=448,quality=80/nuxeo/products/1/9/lampe-de-table-pipistrello-noir-brillant-martinelli-luce_madeindesign_1766479248_original.jpg",
+    specs: [
+      ["Marque", "Martinelli Luce"],
+      ["Designer", "Gae Aulenti"],
+      ["Matière", "Méthacrylate, métal laqué"],
+      ["Hauteur réglable", "62 – 86 cm"],
+      ["Coloris", "Noir brillant"],
+    ]
+  },
+  {
+    id: 3,
+    tag: "Luminaire sans fil",
+    name: "Flowerpot VP9 — &Tradition",
+    price: 279,
+    shortDesc: "La Flowerpot sans fil de &Tradition, en prune foncé profond, allie mobilité et design vintage pour une lumière d'ambiance posée n'importe où.",
+    longDesc: "Créée par Verner Panton en 1968, la Flowerpot est aujourd'hui déclinée en version rechargeable sans fil. Ses deux demi-sphères inversées, laquées dans un prune foncé intense, projettent une lumière douce vers le bas. Autonomie jusqu'à 12 heures. Elle s'invite aussi bien sur une table de jardin que sur un comptoir de cuisine, apportant une touche de couleur affirmée et une lumière intimiste.",
+    img: "https://media.madeindesign.com/cdn-cgi/image/fit=pad,background=white,format=auto,width=448,height=448,quality=80/nuxeo/products/0/4/lampe-sans-fil-rechargeable-flowerpot-vp9-prune-fonce-tradition_madeindesign_1766482846_original.jpg",
+    specs: [
+      ["Marque", "&Tradition"],
+      ["Designer", "Verner Panton"],
+      ["Matière", "Acier laqué"],
+      ["Autonomie", "Jusqu'à 12 heures"],
+      ["Coloris", "Prune foncé"],
+    ]
+  }
+];
+
+let cart = JSON.parse(localStorage.getItem('elore_cart') || '[]');
+
+// ── RENDER PRODUCTS ──
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = products.map(p => `
+    <div class="card" onclick="openDetail(${p.id})">
+      <div class="card-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        <span class="card-tag">${p.tag}</span>
+      </div>
+      <div class="card-body">
+        <h3 class="card-name">${p.name}</h3>
+        <p class="card-desc">${p.shortDesc}</p>
+        <div class="card-footer">
+          <span class="card-price">${p.price},00 €</span>
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="btn-secondary" onclick="openDetail(${p.id})">Voir plus</button>
+            <button class="btn-primary" id="addBtn${p.id}" onclick="addToCart(${p.id})">Ajouter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── CART LOGIC ──
+function addToCart(id, fromDetail = false) {
+  const product = products.find(p => p.id === id);
+  const existing = cart.find(i => i.id === id);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ id, qty: 1 });
+  }
+  saveCart();
+  updateBadge();
+  renderCart();
+
+  // Visual feedback
+  const btnId = fromDetail ? 'detailAddBtn' : `addBtn${id}`;
+  const btn = document.getElementById(btnId);
+  if (btn) {
+    btn.classList.add('added');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Ajouté';
+    setTimeout(() => { btn.classList.remove('added'); btn.textContent = orig; }, 1200);
+  }
+  showToast(`${product.name} ajouté au panier`);
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(i => i.id !== id);
+  saveCart(); updateBadge(); renderCart();
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) removeFromCart(id);
+  else { saveCart(); updateBadge(); renderCart(); }
+}
+
+function saveCart() { localStorage.setItem('elore_cart', JSON.stringify(cart)); }
+
+function updateBadge() {
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = total;
+  badge.classList.toggle('visible', total > 0);
+}
+
+function renderCart() {
+  const container = document.getElementById('cartItems');
+  const footer = document.getElementById('cartFooter');
+
+  if (cart.length === 0) {
+    container.innerHTML = `
+      <div class="cart-empty">
+        <svg width="40" height="40" fill="none" stroke-width="1.2" viewBox="0 0 24 24" style="display:block;margin:0 auto 1rem">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="3" y1="6" x2="21" y2="6" stroke-linecap="round"/>
+          <path d="M16 10a4 4 0 01-8 0" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p>Votre panier est vide</p>
+        <p style="margin-top:.4rem;font-size:.8rem;opacity:.6">Ajoutez des articles pour commencer</p>
+      </div>`;
+    footer.style.display = 'none';
+    return;
+  }
+
+  const total = cart.reduce((s, i) => {
+    const p = products.find(x => x.id === i.id);
+    return s + (p ? p.price * i.qty : 0);
+  }, 0);
+
+  container.innerHTML = cart.map(item => {
+    const p = products.find(x => x.id === item.id);
+    if (!p) return '';
+    return `
+      <div class="cart-item">
+        <div class="cart-item-img">
+          <img src="${p.img}" alt="${p.name}">
+        </div>
+        <div class="cart-item-info">
+          <h3>${p.name}</h3>
+          <p>${p.price},00 €</p>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
+            <span class="qty-num">${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
+          </div>
+        </div>
+        <button class="remove-btn" onclick="removeFromCart(${p.id})" title="Supprimer">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+          </svg>
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  footer.style.display = 'block';
+  document.getElementById('cartTotal').textContent =
+    total.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' €';
+}
+
+// ── CART PANEL TOGGLE ──
+function toggleCart() {
+  document.getElementById('cartPanel').classList.toggle('open');
+  document.getElementById('cartBg').classList.toggle('open');
+}
+
+// ── DETAIL ──
+function openDetail(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('detailImg').innerHTML =
+    `<img src="${p.img}" alt="${p.name}">`;
+
+  document.getElementById('detailContent').innerHTML = `
+    <p class="detail-tag">${p.tag}</p>
+    <h2 class="detail-name">${p.name}</h2>
+    <p class="detail-price">${p.price},00 €</p>
+    <p class="detail-desc">${p.longDesc}</p>
+    <div class="detail-specs">
+      <h4>Caractéristiques</h4>
+      ${p.specs.map(([k,v]) => `
+        <div class="spec-row"><span>${k}</span><span>${v}</span></div>
+      `).join('')}
+    </div>
+    <button class="detail-add" id="detailAddBtn" onclick="addToCart(${p.id}, true)">
+      Ajouter au panier
+    </button>
+  `;
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail(e) {
+  if (e.target === document.getElementById('detailOverlay')) closeDetailBtn();
+}
+function closeDetailBtn() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── SCROLL ──
+function scrollToCollection() {
+  document.getElementById('collection').scrollIntoView({ behavior: 'smooth' });
+}
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// ── INIT ──
+renderProducts();
+updateBadge();
+renderCart();
+</script>
+</body>
+</html>
